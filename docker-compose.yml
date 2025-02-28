@@ -1,0 +1,50 @@
+services:
+  redis:
+    restart: unless-stopped
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+  db:
+    restart: unless-stopped
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  web:
+    restart: unless-stopped
+    build: .
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    command: >
+      sh -c "uv run python manage.py makemigrations &&
+             uv run python manage.py migrate &&
+             uv run python manage.py runserver 0.0.0.0:8000"
+
+  celery:
+    restart: unless-stopped
+    build: .
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    command: uv run celery -A core worker -l info
+    depends_on:
+      - web
+      - redis
+
+volumes:
+  postgres_data:
