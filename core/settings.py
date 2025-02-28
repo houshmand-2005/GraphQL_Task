@@ -38,6 +38,11 @@ ALLOWED_HOSTS = []
 LOCAL_APPS = [
     "users",
     "utils",
+    "chat",
+]
+
+THIRD_PARTY_APPS = [
+    "graphene_django",
 ]
 
 INSTALLED_APPS = [
@@ -48,7 +53,14 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     *LOCAL_APPS,
+    *THIRD_PARTY_APPS,
 ]
+
+# Graphene
+GRAPHENE = {
+    "SCHEMA": "core.schema.schema",
+}
+
 
 AUTH_USER_MODEL = "users.CustomUser"
 
