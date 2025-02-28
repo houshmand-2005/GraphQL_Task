@@ -1,3 +1,7 @@
+"""
+Validators for the application
+"""
+
 from django.core.validators import RegexValidator
 
 
