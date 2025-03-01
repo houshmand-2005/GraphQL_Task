@@ -17,7 +17,7 @@ A chat platform built with Django and GraphQL that implements a subscription-bas
 - Testing
 - GraphQL API
 
-## Installation
+## Installation (recommended)
 
 ```bash
 # Clone the repository
@@ -40,6 +40,8 @@ docker compose exec web uv run python manage.py createsuperuser
 
 ### Run manually
 
+This method needs installing Redis and Postgres on your machine (docker method is easier)
+
 ```bash
 git clone https://github.com/houshmand-2005/GraphQL_Task.git
 cd GraphQL_Task
@@ -61,6 +63,8 @@ python manage.py runserver
 # Run the celery worker (in a separate terminal)
 celery -A core worker -l info
 ```
+
+- You Also need to install Redis and Postgres on your machine. (don't forget to change .env file depending on your settings)
 
 ## Features
 
@@ -104,7 +108,7 @@ python manage.py test
 
 ## GraphQL API
 
-The API is built with Graphene-Django and provides a comprehensive set of queries and mutations:
+The API is built with Graphene-Django and provides a comprehensive set of queries and mutations: (list is not complete)
 
 ### Core Mutations
 
@@ -141,6 +145,7 @@ mutation {
 }
 
 3)
+
 mutation LoginUser {
   login(username: "user_name", password: "your_password") {
     token {
@@ -334,6 +339,25 @@ query GetMySubscription {
 1)
 
 query {
+  messages(
+    conversationId: "1"
+  ) {
+    id
+    text
+    sender {
+      userName
+    }
+    createdAt
+  }
+}
+
+{
+  "Authorization": "Bearer ..."
+}
+
+2)
+
+query {
   conversations {
     id
     title
@@ -350,7 +374,7 @@ query {
   "Authorization": "Bearer ..."
 }
 
-2)
+3)
 
 query {
   conversation(id: "2") {
@@ -369,3 +393,9 @@ query {
   "Authorization": "Bearer ..."
 }
 ```
+
+## TODO
+
+- Add Logger
+- Add more tests
+- Add more features to the chat system
