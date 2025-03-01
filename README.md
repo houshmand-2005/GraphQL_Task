@@ -24,8 +24,8 @@ A chat platform built with Django and GraphQL that implements a subscription-bas
 git clone https://github.com/houshmand-2005/GraphQL_Task.git
 cd GraphQL_Task
 
-# Run the server
-sudo docker compose up
+# Run with docker
+docker compose up
 ```
 
 The application will be available at `http://localhost:8000/graphql`.
@@ -33,7 +33,33 @@ The application will be available at `http://localhost:8000/graphql`.
 To create superuser:
 
 ```bash
-sudo docker compose exec web uv run python manage.py createsuperuser
+docker compose exec web uv run python manage.py createsuperuser
+```
+
+<hr>
+
+### Run manually
+
+```bash
+git clone https://github.com/houshmand-2005/GraphQL_Task.git
+cd GraphQL_Task
+
+pip install -r requirements.txt
+
+# Run migrations
+python manage.py makemigrations && python manage.py migrate
+
+# Run Tests
+python manage.py test
+
+# Create a superuser
+python manage.py createsuperuser
+
+# Run the server
+python manage.py runserver
+
+# Run the celery worker (in a separate terminal)
+celery -A core worker -l info
 ```
 
 ## Features
@@ -55,47 +81,21 @@ The application is built on a modular architecture divided into distinct Django 
 - core: Contains project settings and configuration
 - utils: Shared utility functions and services
 
-### Data Model Overview
-
-```
-┌──────────────┐     ┌────────────────┐     ┌───────────────┐
-│  CustomUser  │     │SubscriptionPlan│     │  Conversation │
-├──────────────┤     ├────────────────┤     ├───────────────┤
-│ user_name    │     │ name           │     │ title         │
-│ email        │     │ description    │     │ owner         │◄─┐
-│ password     │     │ price          │     │ members       │  │
-│ is_active    │     │ max_characters │     └───────────────┘  │
-│ is_staff     │     │ max_conversa-  │            │           │
-│ is_active    │     │ tions          │            ▼           │
-│ ...          │     │ is_active      │                        │
-└──────────────┘     │ is_default     │     ┌───────────────┐  │
-        ▲            └────────────────┘     │    Message    │  │
-        │                                   ├───────────────┤  │
-        │                     ▲             │ text          │  │
-        │                     │             │ sender        │──┘
-        │             ┌────────────────┐    │ conversation  │
-        └─────────────┤UserSubscription│    │ created_at    │
-                      ├────────────────┤    └───────────────┘
-                      │ user           │
-                      │ plan           │
-                      └────────────────┘
-```
-
 ## Authentication System
 
-The application uses JWT (JSON Web Tokens) for authentication
+The application uses JWT for authentication
 
 ### Registration Flow
 
 1. User submits registration information via GraphQL mutation
 2. System creates an inactive user account
 3. Verification email is generated and queued in Celery
-4. Celery worker processes the email and sends it to the user
+4. Celery worker processes the email and sends it to the user (in debug mode, the email is printed to the console)
 5. Users can activate their account via verification token
 
 ## Testing
 
-The project includes comprehensive tests for all components:
+The project includes tests and you can run them with the following command:
 
 ```bash
 # Run all tests
